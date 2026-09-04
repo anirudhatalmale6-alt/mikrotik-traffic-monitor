@@ -1,0 +1,27 @@
+[Unit]
+Description=MikroTik Traffic Monitor collector
+Documentation=file:///opt/mt/tm_collect.php
+After=network-online.target mariadb.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/php /opt/mt/tm_collect.php --loop
+User=www-data
+Group=www-data
+# The collector is a long-lived loop; if it ever dies (MySQL restart, OOM) it must
+# come straight back, otherwise the charts quietly stop without anyone noticing.
+Restart=always
+RestartSec=5
+StandardOutput=null
+StandardError=journal
+SyslogIdentifier=tm-collect
+
+# It only needs to read /opt/mt and talk to MySQL - nothing else on the box.
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target
