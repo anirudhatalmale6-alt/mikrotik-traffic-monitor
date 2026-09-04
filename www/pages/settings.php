@@ -16,7 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $vals = [
             'site_name'          => substr(trim((string)$_POST['site_name']), 0, 60),
             'poll_seconds'       => (string)max(10, min(600, (int)$_POST['poll_seconds'])),
-            'raw_retain_days'    => (string)max(1, min(60, (int)$_POST['raw_retain_days'])),
+            'raw_retain_days'      => (string)max(1, min(60, (int)$_POST['raw_retain_days'])),
+            'user_raw_retain_days' => (string)max(1, min(30, (int)$_POST['user_raw_retain_days'])),
             'hourly_retain_days' => (string)max(30, min(1095, (int)$_POST['hourly_retain_days'])),
         ];
         if ($vals['site_name'] === '') $vals['site_name'] = 'Traffic Monitor';
@@ -72,8 +73,15 @@ tm_header('Settings', 'settings');
       <input type="number" name="poll_seconds" min="10" max="600" value="<?= h($g('poll_seconds', '30')) ?>">
     </div>
     <div class="form-group">
-      <label>Keep detailed samples for (days)</label>
+      <label>Keep detailed interface samples for (days)</label>
       <input type="number" name="raw_retain_days" min="1" max="60" value="<?= h($g('raw_retain_days', '7')) ?>">
+    </div>
+    <div class="form-group">
+      <label>Keep detailed per-user samples for (days)</label>
+      <input type="number" name="user_raw_retain_days" min="1" max="30" value="<?= h($g('user_raw_retain_days', '2')) ?>">
+      <div class="sub" style="margin-top:6px">One row per online device per poll, so this grows far
+        faster than the interface samples. The usage reports read the daily totals, which are kept
+        for the full period below - raising this only adds intraday detail.</div>
     </div>
     <div class="form-group">
       <label>Keep hourly and daily history for (days)</label>

@@ -124,6 +124,7 @@ CREATE TABLE IF NOT EXISTS tm_settings (
 
 INSERT IGNORE INTO tm_settings (k, v) VALUES
   ('poll_seconds',      '30'),
-  ('raw_retain_days',   '7'),    -- tm_iface_sample / tm_user_sample
+  ('raw_retain_days',   '7'),    -- tm_iface_sample
+  ('user_raw_retain_days','2'),  -- tm_user_sample: one row per online device per poll
   ('hourly_retain_days','400'),  -- tm_iface_hourly / tm_user_daily
   ('site_name',         'Traffic Monitor');

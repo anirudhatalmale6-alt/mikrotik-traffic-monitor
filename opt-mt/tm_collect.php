@@ -300,8 +300,13 @@ function tm_purge($db) {
     if (time() - $last < 3600) return;
     $rawDays  = max(1, (int)tm_setting_raw($db, 'raw_retain_days', 7));
     $keepDays = max(30, (int)tm_setting_raw($db, 'hourly_retain_days', 400));
+    // Per-user raw rows are kept far more briefly than per-interface ones. There is
+    // one per online device per poll - with ~185 users on a 30s poll that is over
+    // half a million rows a day - and every report reads tm_user_daily instead. The
+    // raw table only exists so a future intraday view has something to draw.
+    $userDays = max(1, (int)tm_setting_raw($db, 'user_raw_retain_days', 2));
     $db->exec("DELETE FROM tm_iface_sample WHERE sampled_at < NOW() - INTERVAL $rawDays DAY");
-    $db->exec("DELETE FROM tm_user_sample  WHERE sampled_at < NOW() - INTERVAL $rawDays DAY");
+    $db->exec("DELETE FROM tm_user_sample  WHERE sampled_at < NOW() - INTERVAL $userDays DAY");
     $db->exec("DELETE FROM tm_iface_hourly WHERE hour_at    < NOW() - INTERVAL $keepDays DAY");
     $db->exec("DELETE FROM tm_user_daily   WHERE day_at     < NOW() - INTERVAL $keepDays DAY");
     // Devices that have not been seen for a day are gone, not idle.
