@@ -63,7 +63,9 @@ function tm_ifaces($db, $all = false, $routerId = 0) {
     $args = [];
     if (!$all)      { $sql .= " AND i.watched=1 AND r.is_active=1"; }
     if ($routerId)  { $sql .= " AND i.router_id=?"; $args[] = $routerId; }
-    $sql .= " ORDER BY r.name, i.name";
+    // Internet links first, then the ones being recorded: the rows that matter are
+    // at the top instead of wherever the alphabet happens to put them.
+    $sql .= " ORDER BY r.name, i.is_wan DESC, i.watched DESC, i.name";
     $st = $db->prepare($sql);
     $st->execute($args);
     return $st->fetchAll();
